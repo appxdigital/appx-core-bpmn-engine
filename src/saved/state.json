@@ -1,0 +1,1312 @@
+{
+  "name": "bpmn-engine-process-123",
+  "state": "running",
+  "stopped": false,
+  "engineVersion": "22.0.3",
+  "environment": {
+    "settings": {},
+    "variables": {
+      "initialVariable": "here"
+    },
+    "output": {}
+  },
+  "definitions": [
+    {
+      "id": "Definitions_1ysi2zn",
+      "type": "bpmn:Definitions",
+      "executionId": "Definitions_1ysi2zn_934b151fb1",
+      "status": "executing",
+      "stopped": false,
+      "counters": {
+        "completed": 0,
+        "discarded": 0
+      },
+      "environment": {
+        "settings": {},
+        "variables": {
+          "initialVariable": "here"
+        },
+        "output": {}
+      },
+      "execution": {
+        "executionId": "Definitions_1ysi2zn_934b151fb1",
+        "stopped": false,
+        "completed": false,
+        "status": "executing",
+        "processes": [
+          {
+            "id": "Process_1a17ybf",
+            "type": "bpmn:Process",
+            "executionId": "Process_1a17ybf_2b80b649b4",
+            "environment": {
+              "settings": {},
+              "variables": {
+                "initialVariable": "here",
+                "fields": {
+                  "routingKey": "run.execute",
+                  "exchange": "run",
+                  "consumerTag": "_process-run"
+                },
+                "content": {
+                  "id": "Process_1a17ybf",
+                  "type": "bpmn:Process",
+                  "executionId": "Process_1a17ybf_2b80b649b4",
+                  "parent": {
+                    "id": "Definitions_1ysi2zn",
+                    "type": "bpmn:Definitions"
+                  }
+                },
+                "properties": {
+                  "messageId": "smq.mid-574a062623",
+                  "timestamp": 1726064114851
+                },
+                "userName": "f"
+              },
+              "output": {}
+            },
+            "status": "executing",
+            "stopped": false,
+            "counters": {
+              "completed": 0,
+              "discarded": 0
+            },
+            "broker": {
+              "queues": [
+                {
+                  "name": "run-q",
+                  "options": {
+                    "autoDelete": false,
+                    "durable": true
+                  },
+                  "messages": [
+                    {
+                      "fields": {
+                        "routingKey": "run.execute",
+                        "exchange": "run",
+                        "consumerTag": "_process-run"
+                      },
+                      "content": {
+                        "id": "Process_1a17ybf",
+                        "type": "bpmn:Process",
+                        "executionId": "Process_1a17ybf_2b80b649b4",
+                        "parent": {
+                          "id": "Definitions_1ysi2zn",
+                          "type": "bpmn:Definitions"
+                        }
+                      },
+                      "properties": {
+                        "messageId": "smq.mid-574a062623",
+                        "timestamp": 1726064114851
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "execute-Process_1a17ybf_2b80b649b4-q",
+                  "options": {
+                    "autoDelete": false,
+                    "durable": true
+                  },
+                  "messages": [
+                    {
+                      "fields": {
+                        "routingKey": "activity.end",
+                        "exchange": "event",
+                        "consumerTag": "_process-activity-Process_1a17ybf_2b80b649b4"
+                      },
+                      "content": {
+                        "inbound": [
+                          {
+                            "action": "take",
+                            "result": true,
+                            "evaluationId": "Gateway_12c6wi5_c57b9fb28c",
+                            "id": "Flow_0xwquv7",
+                            "sequenceId": "Flow_0xwquv7_take_e0c496ac51",
+                            "type": "bpmn:SequenceFlow",
+                            "sourceId": "Gateway_12c6wi5",
+                            "targetId": "userTaskId",
+                            "isSequenceFlow": true,
+                            "parent": {
+                              "id": "Process_1a17ybf",
+                              "type": "bpmn:Process",
+                              "executionId": "Process_1a17ybf_2b80b649b4"
+                            }
+                          }
+                        ],
+                        "executionId": "userTaskId_9a15c61e7c",
+                        "id": "userTaskId",
+                        "type": "bpmn:UserTask",
+                        "name": "User must confirm",
+                        "parent": {
+                          "id": "Process_1a17ybf",
+                          "type": "bpmn:Process",
+                          "executionId": "Process_1a17ybf_2b80b649b4"
+                        },
+                        "state": "end",
+                        "isRootScope": true
+                      },
+                      "properties": {
+                        "persistent": true,
+                        "correlationId": "userTaskId_signal_b4f19da4d9",
+                        "type": "end",
+                        "mandatory": false,
+                        "messageId": "smq.mid-dd7c08f00b",
+                        "timestamp": 1726064125427
+                      }
+                    },
+                    {
+                      "fields": {
+                        "routingKey": "activity.end",
+                        "exchange": "event",
+                        "consumerTag": "_process-activity-Process_1a17ybf_2b80b649b4"
+                      },
+                      "content": {
+                        "inbound": [
+                          {
+                            "action": "take",
+                            "result": true,
+                            "evaluationId": "Activity_0jr338k_8e7c36ee90",
+                            "id": "Flow_0evurb7",
+                            "sequenceId": "Flow_0evurb7_take_aea0556568",
+                            "type": "bpmn:SequenceFlow",
+                            "sourceId": "Activity_0jr338k",
+                            "targetId": "Gateway_0yui1wu",
+                            "isSequenceFlow": true,
+                            "parent": {
+                              "id": "Process_1a17ybf",
+                              "type": "bpmn:Process",
+                              "executionId": "Process_1a17ybf_2b80b649b4"
+                            }
+                          },
+                          {
+                            "action": "take",
+                            "result": true,
+                            "evaluationId": "userTaskId_9a15c61e7c",
+                            "id": "Flow_082igcu",
+                            "sequenceId": "Flow_082igcu_take_05b6cd3ee6",
+                            "type": "bpmn:SequenceFlow",
+                            "sourceId": "userTaskId",
+                            "targetId": "Gateway_0yui1wu",
+                            "isSequenceFlow": true,
+                            "parent": {
+                              "id": "Process_1a17ybf",
+                              "type": "bpmn:Process",
+                              "executionId": "Process_1a17ybf_2b80b649b4"
+                            }
+                          }
+                        ],
+                        "executionId": "Gateway_0yui1wu_7226cc289d",
+                        "id": "Gateway_0yui1wu",
+                        "type": "bpmn:ParallelGateway",
+                        "parent": {
+                          "id": "Process_1a17ybf",
+                          "type": "bpmn:Process",
+                          "executionId": "Process_1a17ybf_2b80b649b4"
+                        },
+                        "isParallelJoin": true,
+                        "state": "end",
+                        "isRootScope": true
+                      },
+                      "properties": {
+                        "persistent": true,
+                        "type": "end",
+                        "mandatory": false,
+                        "messageId": "smq.mid-349618a3d2",
+                        "timestamp": 1726064125430
+                      }
+                    },
+                    {
+                      "fields": {
+                        "routingKey": "flow.error",
+                        "exchange": "event",
+                        "consumerTag": "_process-activity-Process_1a17ybf_2b80b649b4"
+                      },
+                      "content": {
+                        "id": "Flow_0uekdgg",
+                        "type": "bpmn:SequenceFlow",
+                        "name": "default",
+                        "sourceId": "Gateway_1y7ei9y",
+                        "targetId": "Activity_1gwmyjx",
+                        "isSequenceFlow": true,
+                        "parent": {
+                          "id": "Process_1a17ybf",
+                          "type": "bpmn:Process",
+                          "executionId": "Process_1a17ybf_2b80b649b4"
+                        },
+                        "error": {}
+                      },
+                      "properties": {
+                        "persistent": true,
+                        "type": "error",
+                        "mandatory": true,
+                        "messageId": "smq.mid-42a18cd0e8",
+                        "timestamp": 1726064125434
+                      }
+                    },
+                    {
+                      "fields": {
+                        "routingKey": "activity.end",
+                        "exchange": "event",
+                        "consumerTag": "_process-activity-Process_1a17ybf_2b80b649b4"
+                      },
+                      "content": {
+                        "inbound": [
+                          {
+                            "action": "take",
+                            "result": true,
+                            "evaluationId": "Gateway_0yui1wu_7226cc289d",
+                            "id": "Flow_0235563",
+                            "sequenceId": "Flow_0235563_take_52ed0e40ea",
+                            "type": "bpmn:SequenceFlow",
+                            "sourceId": "Gateway_0yui1wu",
+                            "targetId": "Gateway_1y7ei9y",
+                            "isSequenceFlow": true,
+                            "parent": {
+                              "id": "Process_1a17ybf",
+                              "type": "bpmn:Process",
+                              "executionId": "Process_1a17ybf_2b80b649b4"
+                            }
+                          }
+                        ],
+                        "executionId": "Gateway_1y7ei9y_b325e22671",
+                        "id": "Gateway_1y7ei9y",
+                        "type": "bpmn:ExclusiveGateway",
+                        "parent": {
+                          "id": "Process_1a17ybf",
+                          "type": "bpmn:Process",
+                          "executionId": "Process_1a17ybf_2b80b649b4"
+                        },
+                        "state": "end",
+                        "isRootScope": true,
+                        "outboundTakeOne": true
+                      },
+                      "properties": {
+                        "persistent": true,
+                        "type": "end",
+                        "mandatory": false,
+                        "messageId": "smq.mid-605d6a3a47",
+                        "timestamp": 1726064125435
+                      }
+                    },
+                    {
+                      "fields": {
+                        "routingKey": "activity.end",
+                        "exchange": "event",
+                        "consumerTag": "_process-activity-Process_1a17ybf_2b80b649b4"
+                      },
+                      "content": {
+                        "inbound": [
+                          {
+                            "action": "take",
+                            "result": true,
+                            "evaluationId": "Gateway_1y7ei9y_b325e22671",
+                            "id": "Flow_0uekdgg",
+                            "sequenceId": "Flow_0uekdgg_take_f2e4cdd4f7",
+                            "type": "bpmn:SequenceFlow",
+                            "name": "default",
+                            "sourceId": "Gateway_1y7ei9y",
+                            "targetId": "Activity_1gwmyjx",
+                            "isSequenceFlow": true,
+                            "parent": {
+                              "id": "Process_1a17ybf",
+                              "type": "bpmn:Process",
+                              "executionId": "Process_1a17ybf_2b80b649b4"
+                            }
+                          }
+                        ],
+                        "executionId": "Activity_1gwmyjx_952ee90f0e",
+                        "id": "Activity_1gwmyjx",
+                        "type": "bpmn:ServiceTask",
+                        "name": "Printing it was unsuccessful",
+                        "parent": {
+                          "id": "Process_1a17ybf",
+                          "type": "bpmn:Process",
+                          "executionId": "Process_1a17ybf_2b80b649b4"
+                        },
+                        "state": "end",
+                        "isRootScope": true,
+                        "output": []
+                      },
+                      "properties": {
+                        "persistent": true,
+                        "type": "end",
+                        "mandatory": false,
+                        "messageId": "smq.mid-22f6337732",
+                        "timestamp": 1726064125439
+                      }
+                    },
+                    {
+                      "fields": {
+                        "routingKey": "activity.execution.completed",
+                        "exchange": "event",
+                        "consumerTag": "_process-activity-Process_1a17ybf_2b80b649b4"
+                      },
+                      "content": {
+                        "inbound": [
+                          {
+                            "action": "take",
+                            "result": true,
+                            "evaluationId": "Activity_1gwmyjx_952ee90f0e",
+                            "id": "Flow_1ohs6k4",
+                            "sequenceId": "Flow_1ohs6k4_take_96eff83b0e",
+                            "type": "bpmn:SequenceFlow",
+                            "sourceId": "Activity_1gwmyjx",
+                            "targetId": "final",
+                            "isSequenceFlow": true,
+                            "parent": {
+                              "id": "Process_1a17ybf",
+                              "type": "bpmn:Process",
+                              "executionId": "Process_1a17ybf_2b80b649b4"
+                            }
+                          }
+                        ],
+                        "executionId": "final_87694d08eb",
+                        "id": "final",
+                        "type": "bpmn:EndEvent",
+                        "parent": {
+                          "id": "Process_1a17ybf",
+                          "type": "bpmn:Process",
+                          "executionId": "Process_1a17ybf_2b80b649b4"
+                        },
+                        "isEnd": true,
+                        "isThrowing": true,
+                        "state": "execution.completed",
+                        "isRootScope": true
+                      },
+                      "properties": {
+                        "persistent": true,
+                        "type": "execution.completed",
+                        "messageId": "smq.mid-bb508b3e05",
+                        "timestamp": 1726064125441,
+                        "mandatory": false
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "execution": {
+              "executionId": "Process_1a17ybf_2b80b649b4",
+              "stopped": false,
+              "completed": false,
+              "status": "executing",
+              "children": [
+                {
+                  "id": "init",
+                  "type": "bpmn:ServiceTask",
+                  "executionId": "init_6c602c4e0a",
+                  "counters": {
+                    "taken": 1,
+                    "discarded": 0
+                  },
+                  "execution": {
+                    "completed": true
+                  }
+                },
+                {
+                  "id": "Event_17xx5u2",
+                  "type": "bpmn:StartEvent",
+                  "executionId": "Event_17xx5u2_27bd659143",
+                  "counters": {
+                    "taken": 1,
+                    "discarded": 0
+                  },
+                  "execution": {
+                    "completed": true
+                  }
+                },
+                {
+                  "id": "final",
+                  "type": "bpmn:EndEvent",
+                  "status": "end",
+                  "executionId": "final_87694d08eb",
+                  "counters": {
+                    "taken": 1,
+                    "discarded": 1
+                  },
+                  "broker": {
+                    "queues": [
+                      {
+                        "name": "run-q",
+                        "options": {
+                          "autoDelete": false,
+                          "durable": true
+                        },
+                        "messages": [
+                          {
+                            "fields": {
+                              "routingKey": "run.end",
+                              "exchange": "run",
+                              "consumerTag": "_activity-run"
+                            },
+                            "content": {
+                              "inbound": [
+                                {
+                                  "action": "take",
+                                  "result": true,
+                                  "evaluationId": "Activity_1gwmyjx_952ee90f0e",
+                                  "id": "Flow_1ohs6k4",
+                                  "sequenceId": "Flow_1ohs6k4_take_96eff83b0e",
+                                  "type": "bpmn:SequenceFlow",
+                                  "sourceId": "Activity_1gwmyjx",
+                                  "targetId": "final",
+                                  "isSequenceFlow": true,
+                                  "parent": {
+                                    "id": "Process_1a17ybf",
+                                    "type": "bpmn:Process",
+                                    "executionId": "Process_1a17ybf_2b80b649b4"
+                                  }
+                                }
+                              ],
+                              "executionId": "final_87694d08eb",
+                              "id": "final",
+                              "type": "bpmn:EndEvent",
+                              "parent": {
+                                "id": "Process_1a17ybf",
+                                "type": "bpmn:Process"
+                              },
+                              "isEnd": true,
+                              "isThrowing": true,
+                              "state": "completed",
+                              "isRootScope": true
+                            },
+                            "properties": {
+                              "messageId": "smq.mid-d16dfc4639",
+                              "timestamp": 1726064125441
+                            }
+                          },
+                          {
+                            "fields": {
+                              "routingKey": "run.leave",
+                              "exchange": "run"
+                            },
+                            "content": {
+                              "inbound": [
+                                {
+                                  "action": "take",
+                                  "result": true,
+                                  "evaluationId": "Activity_1gwmyjx_952ee90f0e",
+                                  "id": "Flow_1ohs6k4",
+                                  "sequenceId": "Flow_1ohs6k4_take_96eff83b0e",
+                                  "type": "bpmn:SequenceFlow",
+                                  "sourceId": "Activity_1gwmyjx",
+                                  "targetId": "final",
+                                  "isSequenceFlow": true,
+                                  "parent": {
+                                    "id": "Process_1a17ybf",
+                                    "type": "bpmn:Process",
+                                    "executionId": "Process_1a17ybf_2b80b649b4"
+                                  }
+                                }
+                              ],
+                              "executionId": "final_87694d08eb",
+                              "id": "final",
+                              "type": "bpmn:EndEvent",
+                              "parent": {
+                                "id": "Process_1a17ybf",
+                                "type": "bpmn:Process"
+                              },
+                              "isEnd": true,
+                              "isThrowing": true,
+                              "state": "completed",
+                              "isRootScope": true
+                            },
+                            "properties": {
+                              "messageId": "smq.mid-b2a109bf21",
+                              "timestamp": 1726064125441
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "execution": {
+                    "completed": true
+                  }
+                },
+                {
+                  "id": "input",
+                  "type": "bpmn:ServiceTask",
+                  "executionId": "input_eb7042515a",
+                  "counters": {
+                    "taken": 1,
+                    "discarded": 0
+                  },
+                  "execution": {
+                    "completed": true
+                  }
+                },
+                {
+                  "id": "Gateway_1y7ei9y",
+                  "type": "bpmn:ExclusiveGateway",
+                  "status": "end",
+                  "executionId": "Gateway_1y7ei9y_b325e22671",
+                  "counters": {
+                    "taken": 1,
+                    "discarded": 0
+                  },
+                  "broker": {
+                    "queues": [
+                      {
+                        "name": "run-q",
+                        "options": {
+                          "autoDelete": false,
+                          "durable": true
+                        },
+                        "messages": [
+                          {
+                            "fields": {
+                              "routingKey": "run.leave",
+                              "exchange": "run",
+                              "consumerTag": "_activity-run"
+                            },
+                            "content": {
+                              "inbound": [
+                                {
+                                  "action": "take",
+                                  "result": true,
+                                  "evaluationId": "Gateway_0yui1wu_7226cc289d",
+                                  "id": "Flow_0235563",
+                                  "sequenceId": "Flow_0235563_take_52ed0e40ea",
+                                  "type": "bpmn:SequenceFlow",
+                                  "sourceId": "Gateway_0yui1wu",
+                                  "targetId": "Gateway_1y7ei9y",
+                                  "isSequenceFlow": true,
+                                  "parent": {
+                                    "id": "Process_1a17ybf",
+                                    "type": "bpmn:Process",
+                                    "executionId": "Process_1a17ybf_2b80b649b4"
+                                  }
+                                }
+                              ],
+                              "executionId": "Gateway_1y7ei9y_b325e22671",
+                              "id": "Gateway_1y7ei9y",
+                              "type": "bpmn:ExclusiveGateway",
+                              "parent": {
+                                "id": "Process_1a17ybf",
+                                "type": "bpmn:Process"
+                              },
+                              "state": "completed",
+                              "isRootScope": true,
+                              "outboundTakeOne": true,
+                              "outbound": [
+                                {
+                                  "action": "discard",
+                                  "result": false,
+                                  "evaluationId": "Gateway_1y7ei9y_b325e22671",
+                                  "id": "Flow_1fphijp"
+                                },
+                                {
+                                  "action": "take",
+                                  "result": true,
+                                  "evaluationId": "Gateway_1y7ei9y_b325e22671",
+                                  "id": "Flow_0uekdgg"
+                                }
+                              ]
+                            },
+                            "properties": {
+                              "messageId": "smq.mid-7ffe09f540",
+                              "timestamp": 1726064125435
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "execution": {
+                    "completed": true
+                  }
+                },
+                {
+                  "id": "Activity_1em368j",
+                  "type": "bpmn:ServiceTask",
+                  "executionId": "Activity_1em368j_96070bcb82",
+                  "counters": {
+                    "taken": 0,
+                    "discarded": 1
+                  }
+                },
+                {
+                  "id": "Activity_1gwmyjx",
+                  "type": "bpmn:ServiceTask",
+                  "status": "end",
+                  "executionId": "Activity_1gwmyjx_952ee90f0e",
+                  "counters": {
+                    "taken": 1,
+                    "discarded": 0
+                  },
+                  "broker": {
+                    "queues": [
+                      {
+                        "name": "run-q",
+                        "options": {
+                          "autoDelete": false,
+                          "durable": true
+                        },
+                        "messages": [
+                          {
+                            "fields": {
+                              "routingKey": "run.leave",
+                              "exchange": "run",
+                              "consumerTag": "_activity-run"
+                            },
+                            "content": {
+                              "inbound": [
+                                {
+                                  "action": "take",
+                                  "result": true,
+                                  "evaluationId": "Gateway_1y7ei9y_b325e22671",
+                                  "id": "Flow_0uekdgg",
+                                  "sequenceId": "Flow_0uekdgg_take_f2e4cdd4f7",
+                                  "type": "bpmn:SequenceFlow",
+                                  "name": "default",
+                                  "sourceId": "Gateway_1y7ei9y",
+                                  "targetId": "Activity_1gwmyjx",
+                                  "isSequenceFlow": true,
+                                  "parent": {
+                                    "id": "Process_1a17ybf",
+                                    "type": "bpmn:Process",
+                                    "executionId": "Process_1a17ybf_2b80b649b4"
+                                  }
+                                }
+                              ],
+                              "executionId": "Activity_1gwmyjx_952ee90f0e",
+                              "id": "Activity_1gwmyjx",
+                              "type": "bpmn:ServiceTask",
+                              "name": "Printing it was unsuccessful",
+                              "parent": {
+                                "id": "Process_1a17ybf",
+                                "type": "bpmn:Process"
+                              },
+                              "state": "completed",
+                              "isRootScope": true,
+                              "output": [],
+                              "outbound": [
+                                {
+                                  "action": "take",
+                                  "result": true,
+                                  "evaluationId": "Activity_1gwmyjx_952ee90f0e",
+                                  "id": "Flow_1ohs6k4"
+                                }
+                              ]
+                            },
+                            "properties": {
+                              "messageId": "smq.mid-f32eb119b9",
+                              "timestamp": 1726064125439
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "execution": {
+                    "completed": true
+                  }
+                },
+                {
+                  "id": "Event_0gtqihp",
+                  "type": "bpmn:IntermediateCatchEvent",
+                  "executionId": "Event_0gtqihp_ab0621f2be",
+                  "counters": {
+                    "taken": 1,
+                    "discarded": 1
+                  }
+                },
+                {
+                  "id": "Event_0ksbcjc",
+                  "type": "bpmn:EndEvent",
+                  "executionId": "Event_0ksbcjc_8b705decff",
+                  "counters": {
+                    "taken": 0,
+                    "discarded": 1
+                  }
+                },
+                {
+                  "id": "Activity_0gnyocu",
+                  "type": "bpmn:ServiceTask",
+                  "executionId": "Activity_0gnyocu_307362f45d",
+                  "counters": {
+                    "taken": 0,
+                    "discarded": 1
+                  }
+                },
+                {
+                  "id": "Event_1wp1s3m",
+                  "type": "bpmn:BoundaryEvent",
+                  "executionId": "Event_1wp1s3m_4f488be647",
+                  "counters": {
+                    "taken": 0,
+                    "discarded": 1
+                  },
+                  "execution": {
+                    "completed": true
+                  }
+                },
+                {
+                  "id": "Event_0gluw1d",
+                  "type": "bpmn:BoundaryEvent",
+                  "executionId": "Event_0gluw1d_6ba88eb486",
+                  "counters": {
+                    "taken": 0,
+                    "discarded": 1
+                  },
+                  "execution": {
+                    "completed": true
+                  }
+                },
+                {
+                  "id": "Activity_0lc8edu",
+                  "type": "bpmn:ServiceTask",
+                  "executionId": "Activity_0lc8edu_801023505f",
+                  "counters": {
+                    "taken": 0,
+                    "discarded": 1
+                  }
+                },
+                {
+                  "id": "Gateway_0yui1wu",
+                  "type": "bpmn:ParallelGateway",
+                  "status": "end",
+                  "executionId": "Gateway_0yui1wu_7226cc289d",
+                  "counters": {
+                    "taken": 1,
+                    "discarded": 0
+                  },
+                  "broker": {
+                    "queues": [
+                      {
+                        "name": "run-q",
+                        "options": {
+                          "autoDelete": false,
+                          "durable": true
+                        },
+                        "messages": [
+                          {
+                            "fields": {
+                              "routingKey": "run.leave",
+                              "exchange": "run",
+                              "consumerTag": "_activity-run"
+                            },
+                            "content": {
+                              "inbound": [
+                                {
+                                  "action": "take",
+                                  "result": true,
+                                  "evaluationId": "Activity_0jr338k_8e7c36ee90",
+                                  "id": "Flow_0evurb7",
+                                  "sequenceId": "Flow_0evurb7_take_aea0556568",
+                                  "type": "bpmn:SequenceFlow",
+                                  "sourceId": "Activity_0jr338k",
+                                  "targetId": "Gateway_0yui1wu",
+                                  "isSequenceFlow": true,
+                                  "parent": {
+                                    "id": "Process_1a17ybf",
+                                    "type": "bpmn:Process",
+                                    "executionId": "Process_1a17ybf_2b80b649b4"
+                                  }
+                                },
+                                {
+                                  "action": "take",
+                                  "result": true,
+                                  "evaluationId": "userTaskId_9a15c61e7c",
+                                  "id": "Flow_082igcu",
+                                  "sequenceId": "Flow_082igcu_take_05b6cd3ee6",
+                                  "type": "bpmn:SequenceFlow",
+                                  "sourceId": "userTaskId",
+                                  "targetId": "Gateway_0yui1wu",
+                                  "isSequenceFlow": true,
+                                  "parent": {
+                                    "id": "Process_1a17ybf",
+                                    "type": "bpmn:Process",
+                                    "executionId": "Process_1a17ybf_2b80b649b4"
+                                  }
+                                }
+                              ],
+                              "executionId": "Gateway_0yui1wu_7226cc289d",
+                              "id": "Gateway_0yui1wu",
+                              "type": "bpmn:ParallelGateway",
+                              "parent": {
+                                "id": "Process_1a17ybf",
+                                "type": "bpmn:Process"
+                              },
+                              "isParallelJoin": true,
+                              "state": "completed",
+                              "isRootScope": true,
+                              "outbound": [
+                                {
+                                  "action": "take",
+                                  "result": true,
+                                  "evaluationId": "Gateway_0yui1wu_7226cc289d",
+                                  "id": "Flow_0235563"
+                                }
+                              ]
+                            },
+                            "properties": {
+                              "messageId": "smq.mid-9c58b0f27b",
+                              "timestamp": 1726064125430
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "execution": {
+                    "completed": true
+                  }
+                },
+                {
+                  "id": "Gateway_12c6wi5",
+                  "type": "bpmn:ParallelGateway",
+                  "executionId": "Gateway_12c6wi5_c57b9fb28c",
+                  "counters": {
+                    "taken": 1,
+                    "discarded": 0
+                  },
+                  "execution": {
+                    "completed": true
+                  }
+                },
+                {
+                  "id": "Activity_0jr338k",
+                  "type": "bpmn:SubProcess",
+                  "executionId": "Activity_0jr338k_8e7c36ee90",
+                  "counters": {
+                    "taken": 1,
+                    "discarded": 0
+                  },
+                  "execution": {
+                    "completed": true,
+                    "executionId": "Activity_0jr338k_8e7c36ee90",
+                    "stopped": false,
+                    "status": "completed",
+                    "children": [
+                      {
+                        "id": "Event_13m9ywz",
+                        "type": "bpmn:StartEvent",
+                        "executionId": "Event_13m9ywz_6b450cbcb8",
+                        "counters": {
+                          "taken": 1,
+                          "discarded": 0
+                        },
+                        "execution": {
+                          "completed": true
+                        }
+                      },
+                      {
+                        "id": "Activity_1hvdbnn",
+                        "type": "bpmn:ServiceTask",
+                        "executionId": "Activity_1hvdbnn_aea24ff12a",
+                        "counters": {
+                          "taken": 1,
+                          "discarded": 0
+                        },
+                        "execution": {
+                          "completed": true
+                        }
+                      },
+                      {
+                        "id": "userTask",
+                        "type": "bpmn:UserTask",
+                        "executionId": "userTask_7d77d1c844",
+                        "counters": {
+                          "taken": 1,
+                          "discarded": 0
+                        },
+                        "execution": {
+                          "completed": true
+                        }
+                      },
+                      {
+                        "id": "Event_02perz6",
+                        "type": "bpmn:EndEvent",
+                        "executionId": "Event_02perz6_d34bbf4b7f",
+                        "counters": {
+                          "taken": 1,
+                          "discarded": 0
+                        },
+                        "execution": {
+                          "completed": true
+                        }
+                      }
+                    ],
+                    "flows": [
+                      {
+                        "id": "Flow_0lwrocx",
+                        "type": "bpmn:SequenceFlow",
+                        "counters": {
+                          "looped": 0,
+                          "take": 1,
+                          "discard": 0
+                        }
+                      },
+                      {
+                        "id": "Flow_147998u",
+                        "type": "bpmn:SequenceFlow",
+                        "counters": {
+                          "looped": 0,
+                          "take": 1,
+                          "discard": 0
+                        }
+                      },
+                      {
+                        "id": "Flow_1uifg4k",
+                        "type": "bpmn:SequenceFlow",
+                        "counters": {
+                          "looped": 0,
+                          "take": 1,
+                          "discard": 0
+                        }
+                      }
+                    ],
+                    "environment": {
+                      "settings": {},
+                      "variables": {
+                        "initialVariable": "here",
+                        "fields": {
+                          "routingKey": "execute.start",
+                          "exchange": "execution",
+                          "consumerTag": "_activity-execute"
+                        },
+                        "content": {
+                          "inbound": [
+                            {
+                              "action": "take",
+                              "result": true,
+                              "evaluationId": "Gateway_12c6wi5_c57b9fb28c",
+                              "id": "Flow_1d2uz98",
+                              "sequenceId": "Flow_1d2uz98_take_045e233286",
+                              "type": "bpmn:SequenceFlow",
+                              "sourceId": "Gateway_12c6wi5",
+                              "targetId": "Activity_0jr338k",
+                              "isSequenceFlow": true,
+                              "parent": {
+                                "id": "Process_1a17ybf",
+                                "type": "bpmn:Process",
+                                "executionId": "Process_1a17ybf_2b80b649b4"
+                              }
+                            }
+                          ],
+                          "executionId": "Activity_0jr338k_8e7c36ee90",
+                          "id": "Activity_0jr338k",
+                          "type": "bpmn:SubProcess",
+                          "name": "Send order",
+                          "parent": {
+                            "id": "Process_1a17ybf",
+                            "type": "bpmn:Process"
+                          },
+                          "isSubProcess": true,
+                          "state": "start",
+                          "isRootScope": true
+                        },
+                        "properties": {
+                          "messageId": "smq.mid-caa20e97d5",
+                          "timestamp": 1726064122406
+                        },
+                        "userName": "f"
+                      },
+                      "output": {}
+                    }
+                  }
+                },
+                {
+                  "id": "userTaskId",
+                  "type": "bpmn:UserTask",
+                  "status": "end",
+                  "executionId": "userTaskId_9a15c61e7c",
+                  "counters": {
+                    "taken": 1,
+                    "discarded": 0
+                  },
+                  "broker": {
+                    "queues": [
+                      {
+                        "name": "run-q",
+                        "options": {
+                          "autoDelete": false,
+                          "durable": true
+                        },
+                        "messages": [
+                          {
+                            "fields": {
+                              "routingKey": "run.leave",
+                              "exchange": "run",
+                              "consumerTag": "_activity-run"
+                            },
+                            "content": {
+                              "inbound": [
+                                {
+                                  "action": "take",
+                                  "result": true,
+                                  "evaluationId": "Gateway_12c6wi5_c57b9fb28c",
+                                  "id": "Flow_0xwquv7",
+                                  "sequenceId": "Flow_0xwquv7_take_e0c496ac51",
+                                  "type": "bpmn:SequenceFlow",
+                                  "sourceId": "Gateway_12c6wi5",
+                                  "targetId": "userTaskId",
+                                  "isSequenceFlow": true,
+                                  "parent": {
+                                    "id": "Process_1a17ybf",
+                                    "type": "bpmn:Process",
+                                    "executionId": "Process_1a17ybf_2b80b649b4"
+                                  }
+                                }
+                              ],
+                              "executionId": "userTaskId_9a15c61e7c",
+                              "id": "userTaskId",
+                              "type": "bpmn:UserTask",
+                              "name": "User must confirm",
+                              "parent": {
+                                "id": "Process_1a17ybf",
+                                "type": "bpmn:Process"
+                              },
+                              "state": "completed",
+                              "isRootScope": true,
+                              "outbound": [
+                                {
+                                  "action": "take",
+                                  "result": true,
+                                  "evaluationId": "userTaskId_9a15c61e7c",
+                                  "id": "Flow_082igcu"
+                                }
+                              ]
+                            },
+                            "properties": {
+                              "correlationId": "userTaskId_signal_b4f19da4d9",
+                              "messageId": "smq.mid-bbb08a82a5",
+                              "timestamp": 1726064125427
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "execution": {
+                    "completed": true
+                  }
+                }
+              ],
+              "flows": [
+                {
+                  "id": "Flow_05wdnsc",
+                  "type": "bpmn:SequenceFlow",
+                  "counters": {
+                    "looped": 0,
+                    "take": 1,
+                    "discard": 0
+                  }
+                },
+                {
+                  "id": "Flow_1oymb10",
+                  "type": "bpmn:SequenceFlow",
+                  "counters": {
+                    "looped": 0,
+                    "take": 1,
+                    "discard": 0
+                  }
+                },
+                {
+                  "id": "Flow_1ohs6k4",
+                  "type": "bpmn:SequenceFlow",
+                  "counters": {
+                    "looped": 0,
+                    "take": 1,
+                    "discard": 0
+                  }
+                },
+                {
+                  "id": "Flow_0nhpnra",
+                  "type": "bpmn:SequenceFlow",
+                  "counters": {
+                    "looped": 0,
+                    "take": 0,
+                    "discard": 1
+                  }
+                },
+                {
+                  "id": "Flow_1fphijp",
+                  "type": "bpmn:SequenceFlow",
+                  "counters": {
+                    "looped": 0,
+                    "take": 0,
+                    "discard": 1
+                  }
+                },
+                {
+                  "id": "Flow_0uekdgg",
+                  "type": "bpmn:SequenceFlow",
+                  "counters": {
+                    "looped": 0,
+                    "take": 1,
+                    "discard": 0
+                  }
+                },
+                {
+                  "id": "Flow_0zhmfov",
+                  "type": "bpmn:SequenceFlow",
+                  "counters": {
+                    "looped": 0,
+                    "take": 0,
+                    "discard": 1
+                  }
+                },
+                {
+                  "id": "Flow_15coz6l",
+                  "type": "bpmn:SequenceFlow",
+                  "counters": {
+                    "looped": 0,
+                    "take": 0,
+                    "discard": 1
+                  }
+                },
+                {
+                  "id": "Flow_1d2uz98",
+                  "type": "bpmn:SequenceFlow",
+                  "counters": {
+                    "looped": 0,
+                    "take": 1,
+                    "discard": 0
+                  }
+                },
+                {
+                  "id": "Flow_0evurb7",
+                  "type": "bpmn:SequenceFlow",
+                  "counters": {
+                    "looped": 0,
+                    "take": 1,
+                    "discard": 0
+                  }
+                },
+                {
+                  "id": "Flow_0fzinf1",
+                  "type": "bpmn:SequenceFlow",
+                  "counters": {
+                    "looped": 0,
+                    "take": 0,
+                    "discard": 1
+                  }
+                },
+                {
+                  "id": "Flow_01bjwmw",
+                  "type": "bpmn:SequenceFlow",
+                  "counters": {
+                    "looped": 0,
+                    "take": 0,
+                    "discard": 1
+                  }
+                },
+                {
+                  "id": "Flow_0235563",
+                  "type": "bpmn:SequenceFlow",
+                  "counters": {
+                    "looped": 0,
+                    "take": 1,
+                    "discard": 0
+                  }
+                },
+                {
+                  "id": "Flow_0xwquv7",
+                  "type": "bpmn:SequenceFlow",
+                  "counters": {
+                    "looped": 0,
+                    "take": 1,
+                    "discard": 0
+                  }
+                },
+                {
+                  "id": "Flow_082igcu",
+                  "type": "bpmn:SequenceFlow",
+                  "counters": {
+                    "looped": 0,
+                    "take": 1,
+                    "discard": 0
+                  }
+                },
+                {
+                  "id": "Flow_0cnvrj0",
+                  "type": "bpmn:SequenceFlow",
+                  "counters": {
+                    "looped": 1,
+                    "take": 1,
+                    "discard": 0
+                  }
+                },
+                {
+                  "id": "Flow_0o2vtn8",
+                  "type": "bpmn:SequenceFlow",
+                  "counters": {
+                    "looped": 0,
+                    "take": 1,
+                    "discard": 0
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "broker": {
+        "queues": [
+          {
+            "name": "run-q",
+            "options": {
+              "autoDelete": false,
+              "durable": true
+            },
+            "messages": [
+              {
+                "fields": {
+                  "routingKey": "run.execute",
+                  "exchange": "run",
+                  "consumerTag": "_definition-run"
+                },
+                "content": {
+                  "id": "Definitions_1ysi2zn",
+                  "type": "bpmn:Definitions",
+                  "executionId": "Definitions_1ysi2zn_934b151fb1"
+                },
+                "properties": {
+                  "messageId": "smq.mid-6c63e9d5be",
+                  "timestamp": 1726064114848
+                }
+              }
+            ]
+          },
+          {
+            "name": "execute-Definitions_1ysi2zn_934b151fb1-q",
+            "options": {
+              "autoDelete": false,
+              "durable": true
+            },
+            "messages": [
+              {
+                "fields": {
+                  "routingKey": "process.start",
+                  "exchange": "event",
+                  "consumerTag": "_definition-activity-Definitions_1ysi2zn_934b151fb1"
+                },
+                "content": {
+                  "id": "Process_1a17ybf",
+                  "type": "bpmn:Process",
+                  "executionId": "Process_1a17ybf_2b80b649b4",
+                  "parent": {
+                    "id": "Definitions_1ysi2zn",
+                    "type": "bpmn:Definitions",
+                    "executionId": "Definitions_1ysi2zn_934b151fb1"
+                  },
+                  "state": "start"
+                },
+                "properties": {
+                  "type": "start",
+                  "mandatory": false,
+                  "messageId": "smq.mid-b894c8ebb3",
+                  "timestamp": 1726064114851
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "source": "{\"id\":\"Definitions_1ysi2zn\",\"type\":\"bpmn:Definitions\",\"definition\":{\"id\":\"Definitions_1ysi2zn\",\"type\":\"bpmn:Definitions\",\"targetNamespace\":\"http://bpmn.io/schema/bpmn\",\"exporter\":\"Camunda Modeler\",\"exporterVersion\":\"5.26.0\"},\"activities\":[{\"id\":\"init\",\"type\":\"bpmn:ServiceTask\",\"name\":\"Log\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"behaviour\":{\"$type\":\"bpmn:ServiceTask\",\"id\":\"init\",\"name\":\"Log\",\"implementation\":\"${environment.services.get}\"}},{\"id\":\"Event_17xx5u2\",\"type\":\"bpmn:StartEvent\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"behaviour\":{\"$type\":\"bpmn:StartEvent\",\"id\":\"Event_17xx5u2\"}},{\"id\":\"final\",\"type\":\"bpmn:EndEvent\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"behaviour\":{\"$type\":\"bpmn:EndEvent\",\"id\":\"final\"}},{\"id\":\"input\",\"type\":\"bpmn:ServiceTask\",\"name\":\"Prompting user\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"behaviour\":{\"$type\":\"bpmn:ServiceTask\",\"id\":\"input\",\"name\":\"Prompting user\",\"implementation\":\"${environment.services.promptUser}\",\"extensionElements\":{\"$type\":\"bpmn:ExtensionElements\"}}},{\"id\":\"Gateway_1y7ei9y\",\"type\":\"bpmn:ExclusiveGateway\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"behaviour\":{\"$type\":\"bpmn:ExclusiveGateway\",\"id\":\"Gateway_1y7ei9y\"}},{\"id\":\"Activity_1em368j\",\"type\":\"bpmn:ServiceTask\",\"name\":\"Printing success\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"behaviour\":{\"$type\":\"bpmn:ServiceTask\",\"id\":\"Activity_1em368j\",\"name\":\"Printing success\",\"implementation\":\"${environment.services.test}\"}},{\"id\":\"Activity_1gwmyjx\",\"type\":\"bpmn:ServiceTask\",\"name\":\"Printing it was unsuccessful\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"behaviour\":{\"$type\":\"bpmn:ServiceTask\",\"id\":\"Activity_1gwmyjx\",\"name\":\"Printing it was unsuccessful\",\"implementation\":\"${environment.services.test1}\"}},{\"id\":\"Event_0gtqihp\",\"type\":\"bpmn:IntermediateCatchEvent\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"behaviour\":{\"$type\":\"bpmn:IntermediateCatchEvent\",\"id\":\"Event_0gtqihp\",\"eventDefinitions\":[{\"id\":\"TimerEventDefinition_1uem1bm\",\"type\":\"bpmn:TimerEventDefinition\",\"behaviour\":{\"$type\":\"bpmn:TimerEventDefinition\",\"id\":\"TimerEventDefinition_1uem1bm\",\"timeDuration\":\"PT3S\"}}]}},{\"id\":\"Event_0ksbcjc\",\"type\":\"bpmn:EndEvent\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"behaviour\":{\"$type\":\"bpmn:EndEvent\",\"id\":\"Event_0ksbcjc\"}},{\"id\":\"Activity_0gnyocu\",\"type\":\"bpmn:ServiceTask\",\"name\":\"Handle error\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"behaviour\":{\"$type\":\"bpmn:ServiceTask\",\"id\":\"Activity_0gnyocu\",\"name\":\"Handle error\",\"implementation\":\"${environment.services.test2}\"}},{\"id\":\"Event_1wp1s3m\",\"type\":\"bpmn:BoundaryEvent\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"behaviour\":{\"attachedTo\":{\"id\":\"input\",\"type\":\"bpmn:ServiceTask\",\"name\":\"Prompting user\"},\"$type\":\"bpmn:BoundaryEvent\",\"id\":\"Event_1wp1s3m\",\"eventDefinitions\":[{\"id\":\"ErrorEventDefinition_0iqyd11\",\"type\":\"bpmn:ErrorEventDefinition\",\"behaviour\":{\"$type\":\"bpmn:ErrorEventDefinition\",\"id\":\"ErrorEventDefinition_0iqyd11\"}}]}},{\"id\":\"Event_0gluw1d\",\"type\":\"bpmn:BoundaryEvent\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"behaviour\":{\"attachedTo\":{\"id\":\"input\",\"type\":\"bpmn:ServiceTask\",\"name\":\"Prompting user\"},\"$type\":\"bpmn:BoundaryEvent\",\"id\":\"Event_0gluw1d\",\"eventDefinitions\":[{\"id\":\"TimerEventDefinition_00i57ac\",\"type\":\"bpmn:TimerEventDefinition\",\"behaviour\":{\"$type\":\"bpmn:TimerEventDefinition\",\"id\":\"TimerEventDefinition_00i57ac\",\"timeDuration\":\"PT5S\"}}]}},{\"id\":\"Activity_0lc8edu\",\"type\":\"bpmn:ServiceTask\",\"name\":\"Reminder of prompt\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"behaviour\":{\"$type\":\"bpmn:ServiceTask\",\"id\":\"Activity_0lc8edu\",\"name\":\"Reminder of prompt\",\"implementation\":\"${environment.services.reminder}\"}},{\"id\":\"Gateway_0yui1wu\",\"type\":\"bpmn:ParallelGateway\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"behaviour\":{\"$type\":\"bpmn:ParallelGateway\",\"id\":\"Gateway_0yui1wu\"}},{\"id\":\"Gateway_12c6wi5\",\"type\":\"bpmn:ParallelGateway\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"behaviour\":{\"$type\":\"bpmn:ParallelGateway\",\"id\":\"Gateway_12c6wi5\"}},{\"id\":\"Activity_0jr338k\",\"type\":\"bpmn:SubProcess\",\"name\":\"Send order\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"behaviour\":{\"$type\":\"bpmn:SubProcess\",\"id\":\"Activity_0jr338k\",\"name\":\"Send order\",\"flowElements\":[{\"$type\":\"bpmn:StartEvent\",\"id\":\"Event_13m9ywz\"},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0lwrocx\"},{\"$type\":\"bpmn:ServiceTask\",\"id\":\"Activity_1hvdbnn\",\"name\":\"Sending order\",\"implementation\":\"${environment.services.task3}\"},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_147998u\"},{\"$type\":\"bpmn:UserTask\",\"id\":\"userTask\",\"name\":\"Approve order\"},{\"$type\":\"bpmn:EndEvent\",\"id\":\"Event_02perz6\"},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_1uifg4k\"}]}},{\"id\":\"Event_13m9ywz\",\"type\":\"bpmn:StartEvent\",\"parent\":{\"id\":\"Activity_0jr338k\",\"type\":\"bpmn:SubProcess\"},\"behaviour\":{\"$type\":\"bpmn:StartEvent\",\"id\":\"Event_13m9ywz\"}},{\"id\":\"Activity_1hvdbnn\",\"type\":\"bpmn:ServiceTask\",\"name\":\"Sending order\",\"parent\":{\"id\":\"Activity_0jr338k\",\"type\":\"bpmn:SubProcess\"},\"behaviour\":{\"$type\":\"bpmn:ServiceTask\",\"id\":\"Activity_1hvdbnn\",\"name\":\"Sending order\",\"implementation\":\"${environment.services.task3}\"}},{\"id\":\"userTask\",\"type\":\"bpmn:UserTask\",\"name\":\"Approve order\",\"parent\":{\"id\":\"Activity_0jr338k\",\"type\":\"bpmn:SubProcess\"},\"behaviour\":{\"$type\":\"bpmn:UserTask\",\"id\":\"userTask\",\"name\":\"Approve order\"}},{\"id\":\"Event_02perz6\",\"type\":\"bpmn:EndEvent\",\"parent\":{\"id\":\"Activity_0jr338k\",\"type\":\"bpmn:SubProcess\"},\"behaviour\":{\"$type\":\"bpmn:EndEvent\",\"id\":\"Event_02perz6\"}},{\"id\":\"userTaskId\",\"type\":\"bpmn:UserTask\",\"name\":\"User must confirm\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"behaviour\":{\"$type\":\"bpmn:UserTask\",\"id\":\"userTaskId\",\"name\":\"User must confirm\",\"extensionElements\":{\"$type\":\"bpmn:ExtensionElements\"}}}],\"associations\":[],\"dataObjects\":[],\"dataStores\":[],\"messageFlows\":[],\"participants\":[{\"id\":\"Participant_1n3ko7j\",\"type\":\"bpmn:Participant\",\"processId\":\"Process_1a17ybf\",\"parent\":{\"id\":\"Collaboration_0gknp4i\",\"type\":\"bpmn:Collaboration\"}}],\"processes\":[{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\",\"parent\":{\"id\":\"Definitions_1ysi2zn\",\"type\":\"bpmn:Definitions\"},\"behaviour\":{\"$type\":\"bpmn:Process\",\"id\":\"Process_1a17ybf\",\"isExecutable\":true,\"flowElements\":[{\"$type\":\"bpmn:ServiceTask\",\"id\":\"init\",\"name\":\"Log\",\"implementation\":\"${environment.services.get}\"},{\"$type\":\"bpmn:StartEvent\",\"id\":\"Event_17xx5u2\"},{\"$type\":\"bpmn:EndEvent\",\"id\":\"final\"},{\"$type\":\"bpmn:ServiceTask\",\"id\":\"input\",\"name\":\"Prompting user\",\"implementation\":\"${environment.services.promptUser}\",\"extensionElements\":{\"$type\":\"bpmn:ExtensionElements\"}},{\"$type\":\"bpmn:ExclusiveGateway\",\"id\":\"Gateway_1y7ei9y\"},{\"$type\":\"bpmn:ServiceTask\",\"id\":\"Activity_1em368j\",\"name\":\"Printing success\",\"implementation\":\"${environment.services.test}\"},{\"$type\":\"bpmn:ServiceTask\",\"id\":\"Activity_1gwmyjx\",\"name\":\"Printing it was unsuccessful\",\"implementation\":\"${environment.services.test1}\"},{\"$type\":\"bpmn:IntermediateCatchEvent\",\"id\":\"Event_0gtqihp\",\"eventDefinitions\":[{\"$type\":\"bpmn:TimerEventDefinition\",\"id\":\"TimerEventDefinition_1uem1bm\",\"timeDuration\":{\"$type\":\"bpmn:FormalExpression\",\"body\":\"PT3S\"}}]},{\"$type\":\"bpmn:EndEvent\",\"id\":\"Event_0ksbcjc\"},{\"$type\":\"bpmn:ServiceTask\",\"id\":\"Activity_0gnyocu\",\"name\":\"Handle error\",\"implementation\":\"${environment.services.test2}\"},{\"$type\":\"bpmn:BoundaryEvent\",\"id\":\"Event_1wp1s3m\",\"eventDefinitions\":[{\"$type\":\"bpmn:ErrorEventDefinition\",\"id\":\"ErrorEventDefinition_0iqyd11\"}]},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_05wdnsc\"},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_1oymb10\"},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_1ohs6k4\"},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0nhpnra\"},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_1fphijp\",\"name\":\"success\",\"conditionExpression\":{\"$type\":\"bpmn:FormalExpression\",\"language\":\"JavaScript\",\"body\":\"next(null, this.environment.variables.userName === 'success');\"}},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0uekdgg\",\"name\":\"default\",\"conditionExpression\":{\"$type\":\"bpmn:FormalExpression\"}},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0zhmfov\"},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_15coz6l\"},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_1d2uz98\"},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0evurb7\"},{\"$type\":\"bpmn:BoundaryEvent\",\"id\":\"Event_0gluw1d\",\"eventDefinitions\":[{\"$type\":\"bpmn:TimerEventDefinition\",\"id\":\"TimerEventDefinition_00i57ac\",\"timeDuration\":{\"$type\":\"bpmn:FormalExpression\",\"body\":\"PT5S\"}}]},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0fzinf1\"},{\"$type\":\"bpmn:ServiceTask\",\"id\":\"Activity_0lc8edu\",\"name\":\"Reminder of prompt\",\"implementation\":\"${environment.services.reminder}\"},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_01bjwmw\"},{\"$type\":\"bpmn:ParallelGateway\",\"id\":\"Gateway_0yui1wu\"},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0235563\"},{\"$type\":\"bpmn:ParallelGateway\",\"id\":\"Gateway_12c6wi5\"},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0xwquv7\"},{\"$type\":\"bpmn:SubProcess\",\"id\":\"Activity_0jr338k\",\"name\":\"Send order\",\"flowElements\":[{\"$type\":\"bpmn:StartEvent\",\"id\":\"Event_13m9ywz\"},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0lwrocx\"},{\"$type\":\"bpmn:ServiceTask\",\"id\":\"Activity_1hvdbnn\",\"name\":\"Sending order\",\"implementation\":\"${environment.services.task3}\"},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_147998u\"},{\"$type\":\"bpmn:UserTask\",\"id\":\"userTask\",\"name\":\"Approve order\"},{\"$type\":\"bpmn:EndEvent\",\"id\":\"Event_02perz6\"},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_1uifg4k\"}]},{\"$type\":\"bpmn:UserTask\",\"id\":\"userTaskId\",\"name\":\"User must confirm\",\"extensionElements\":{\"$type\":\"bpmn:ExtensionElements\"}},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_082igcu\"},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0cnvrj0\"},{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0o2vtn8\"}]}}],\"sequenceFlows\":[{\"id\":\"Flow_05wdnsc\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"targetId\":\"init\",\"sourceId\":\"Event_17xx5u2\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_05wdnsc\"}},{\"id\":\"Flow_1oymb10\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"targetId\":\"Event_0gtqihp\",\"sourceId\":\"init\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_1oymb10\"}},{\"id\":\"Flow_1ohs6k4\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"targetId\":\"final\",\"sourceId\":\"Activity_1gwmyjx\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_1ohs6k4\"}},{\"id\":\"Flow_0nhpnra\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"targetId\":\"final\",\"sourceId\":\"Activity_1em368j\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0nhpnra\"}},{\"id\":\"Flow_1fphijp\",\"name\":\"success\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"targetId\":\"Activity_1em368j\",\"sourceId\":\"Gateway_1y7ei9y\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_1fphijp\",\"name\":\"success\",\"conditionExpression\":{\"$type\":\"bpmn:FormalExpression\",\"language\":\"JavaScript\",\"body\":\"next(null, this.environment.variables.userName === 'success');\"}}},{\"id\":\"Flow_0uekdgg\",\"name\":\"default\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"targetId\":\"Activity_1gwmyjx\",\"sourceId\":\"Gateway_1y7ei9y\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0uekdgg\",\"name\":\"default\",\"conditionExpression\":{\"$type\":\"bpmn:FormalExpression\"}}},{\"id\":\"Flow_0zhmfov\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"targetId\":\"Event_0ksbcjc\",\"sourceId\":\"Activity_0gnyocu\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0zhmfov\"}},{\"id\":\"Flow_15coz6l\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"targetId\":\"Activity_0gnyocu\",\"sourceId\":\"Event_1wp1s3m\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_15coz6l\"}},{\"id\":\"Flow_1d2uz98\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"targetId\":\"Activity_0jr338k\",\"sourceId\":\"Gateway_12c6wi5\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_1d2uz98\"}},{\"id\":\"Flow_0evurb7\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"targetId\":\"Gateway_0yui1wu\",\"sourceId\":\"Activity_0jr338k\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0evurb7\"}},{\"id\":\"Flow_0fzinf1\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"targetId\":\"Activity_0lc8edu\",\"sourceId\":\"Event_0gluw1d\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0fzinf1\"}},{\"id\":\"Flow_01bjwmw\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"targetId\":\"Event_0gtqihp\",\"sourceId\":\"Activity_0lc8edu\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_01bjwmw\"}},{\"id\":\"Flow_0235563\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"targetId\":\"Gateway_1y7ei9y\",\"sourceId\":\"Gateway_0yui1wu\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0235563\"}},{\"id\":\"Flow_0xwquv7\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"targetId\":\"userTaskId\",\"sourceId\":\"Gateway_12c6wi5\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0xwquv7\"}},{\"id\":\"Flow_0lwrocx\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Activity_0jr338k\",\"type\":\"bpmn:SubProcess\"},\"targetId\":\"Activity_1hvdbnn\",\"sourceId\":\"Event_13m9ywz\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0lwrocx\"}},{\"id\":\"Flow_147998u\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Activity_0jr338k\",\"type\":\"bpmn:SubProcess\"},\"targetId\":\"userTask\",\"sourceId\":\"Activity_1hvdbnn\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_147998u\"}},{\"id\":\"Flow_1uifg4k\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Activity_0jr338k\",\"type\":\"bpmn:SubProcess\"},\"targetId\":\"Event_02perz6\",\"sourceId\":\"userTask\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_1uifg4k\"}},{\"id\":\"Flow_082igcu\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"targetId\":\"Gateway_0yui1wu\",\"sourceId\":\"userTaskId\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_082igcu\"}},{\"id\":\"Flow_0cnvrj0\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"targetId\":\"input\",\"sourceId\":\"Event_0gtqihp\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0cnvrj0\"}},{\"id\":\"Flow_0o2vtn8\",\"type\":\"bpmn:SequenceFlow\",\"parent\":{\"id\":\"Process_1a17ybf\",\"type\":\"bpmn:Process\"},\"targetId\":\"Gateway_12c6wi5\",\"sourceId\":\"input\",\"behaviour\":{\"$type\":\"bpmn:SequenceFlow\",\"id\":\"Flow_0o2vtn8\"}}],\"scripts\":[{\"name\":\"Flow_1fphijp\",\"parent\":{\"id\":\"Flow_1fphijp\",\"type\":\"bpmn:SequenceFlow\"},\"script\":{\"scriptFormat\":\"JavaScript\",\"body\":\"next(null, this.environment.variables.userName === 'success');\",\"type\":\"bpmn:FormalExpression\"}}],\"timers\":[{\"name\":\"TimerEventDefinition_1uem1bm\",\"parent\":{\"id\":\"Event_0gtqihp\",\"type\":\"bpmn:IntermediateCatchEvent\"},\"timer\":{\"id\":\"TimerEventDefinition_1uem1bm\",\"timerType\":\"timeDuration\",\"value\":\"PT3S\",\"type\":\"bpmn:TimerEventDefinition\"}},{\"name\":\"TimerEventDefinition_00i57ac\",\"parent\":{\"id\":\"Event_0gluw1d\",\"type\":\"bpmn:BoundaryEvent\"},\"timer\":{\"id\":\"TimerEventDefinition_00i57ac\",\"timerType\":\"timeDuration\",\"value\":\"PT5S\",\"type\":\"bpmn:TimerEventDefinition\"}}]}"
+    }
+  ]
+}
