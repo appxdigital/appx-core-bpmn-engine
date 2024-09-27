@@ -1,8 +1,14 @@
-import readline from "readline";
-import {printer} from "../../functions.js";
-import {BPMNEngineContext} from "../../bpmn-engine.js";
+import {printer} from "../../shared-functions/test-flow.js";
 
 const services = {
+    testing : async (params) => {
+        console.log("Testing the function");
+    },
+
+    testing2 : async (params) => {
+        console.log("Testing the function 2");
+    },
+
     promptUser: async (params) => {
         const test = params.get('userName');
         // const rl = readline.createInterface({
@@ -21,13 +27,28 @@ const services = {
         // params.executionContext.environment.variables.userName = reply;
 
         console.log("The first function set 'test' as : " + test)
-        //rl.close()
+        throw new Error('Error thrown from the promptUser function!');
+        //rl.close();
     },
 
-    get: (params) => {
-        console.log('Logging function is being called, performing x function...');
-        console.log("Variables", BPMNEngineContext.variables);
+    get: async (params) => {
+        console.log('Logging function is being called, it will now await for async function to complete in 5 seconds...');
+        //I want it now to await here and only then proceed with the following console.log
+
+        const test = await new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve('Success');
+            }, 5000);
+        });
+
+        console.log("The function has been called and the result is: " + test);
+
+        // console.log("Variables", BPMNEngineContext.variables);
         console.log("Arguments", params.args);
+        //
+        // console.log("params.context.constructor.name");
+        // console.log(params.context.constructor.name);
+
         params.set('userName', 'John Doe')
     },
 
@@ -42,7 +63,7 @@ const services = {
     },
 
     test2: async (params) => {
-        printer.red("Error was thrown!")
+        printer.red("Error was thrown via the error throwing event!")
     },
 
     task3: async (params) => {
@@ -55,7 +76,13 @@ const services = {
     },
 
     reminder: async (params) => {
-        console.log(params.context.environment.variables)
+        console.log("params", params.getMany());
+        // params.set('lot', (test) => {
+        //     console.log("IT MADE IT HERE!")
+        //     console.log(params.context.environment.services);
+        //     console.log("test", test)
+        //     return test === 'success';
+        // })
     },
 
     reminder1: async (params) => {
@@ -63,7 +90,12 @@ const services = {
     },
 
     logger: async (params) => {
+        printer.orange("PROBLEM HAS OCCURRED!")
+    },
+
+    logger1: async (params) => {
+        printer.green("THINGS ARE FINE")
     }
-};
+}
 
 export default services;

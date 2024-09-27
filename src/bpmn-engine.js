@@ -1,14 +1,14 @@
 import {Engine} from 'bpmn-engine';
 import {EventEmitter} from 'events';
-import {fileURLToPath} from "node:url";
+import {fileURLToPath, pathToFileURL} from "node:url";
 import {createRequire} from "node:module";
-import {printer} from "./functions.js";
 import * as fs from "fs";
 import * as path from "path";
-import {pathToFileURL} from "node:url";
-import {dirname, join} from 'path';
+import {dirname} from "path";
 
 import {AsyncLocalStorage} from "node:async_hooks";
+import {printer} from "./bpmn-flows/shared-functions/test-flow.js";
+import activityHandlers from "./bpmn-flows/test-flow/activity-helpers/user.js";
 
 const camunda = createRequire(fileURLToPath(import.meta.url))('camunda-bpmn-moddle/resources/camunda.json');
 
@@ -58,14 +58,19 @@ const extensions = {
 // }
 
 class BPMNEngineManager {
-    constructor() {
+    constructor(
+        config,
+    ) {
+        this.config_path = config.config_path;
         this.engines = new Map();
         this.listener = new EventEmitter();
         this.activityHandlers = {};
-        this.serviceWrappers = {};
         this.saveToDatabase = this.#saveToDatabase;
         this.signaledTasks = new Set();
         this.pendingTasks = new Set();
+        this.currentTimers = new Set();
+        this.errorHandlers = new Set();
+        this.errorThrown = false;
     }
 
     /**
@@ -77,29 +82,26 @@ class BPMNEngineManager {
     }
 
     /**
-     * Register service wrappers that will inject executionContext and ensure callback is called.
-     * @param {Object} wrappers - An object where keys are service names and values are wrapper functions.
-     */
-    registerServiceWrappers(wrappers) {
-        this.serviceWrappers = {...this.serviceWrappers, ...wrappers};
-    }
-
-    /**
      * Save the current state of the engine to a file.
      * @param state - The state of the engine.
      * @param instanceId - Unique identifier for the process instance.
      * @param skipStop - Whether to skip stopping the engine before saving the state.
-     *
+     * @param altPath
      */
 
-    #saveToDatabase = (state, instanceId, skipStop = false) => {
+    #saveToDatabase = (state, instanceId, skipStop = false, altPath = null) => {
+        if (this.errorThrown) {
+            console.error('An error has occurred, not saving state.');
+            return;
+        }
         console.log('Saving state to database...');
 
-        if (!skipStop) {
-            this.stopEngine(instanceId);
+        if (!state) {
+            console.error('No state found to save.');
+            return;
         }
 
-        const folderPath = 'src/saved';
+        const folderPath = altPath ?? 'src/saved';
         let fileName = `${instanceId}.json`;
         let filePath = path.join(folderPath, fileName);
         let fileIndex = 0;
@@ -111,16 +113,21 @@ class BPMNEngineManager {
         }
 
         fs.writeFileSync(filePath, JSON.stringify(state, null, 2));
-        console.log(`State saved to src/saved/${fileName}`);
+        console.log(`State saved to ${altPath ?? 'src/saved/'}${fileName}`);
+
+        if (!skipStop) {
+            this.stopEngine(instanceId);
+        }
     }
 
     /**
      * Delete all saved state files for a specific process instance.
      * @param instanceId - Unique identifier for the process instance.
      *
+     * @param altPath
      */
 
-    #deleteSavedState = (instanceId) => {
+    #deleteSavedState = (instanceId, altPath = null) => {
         console.log(`Deleting all saved state files for instanceId: ${instanceId}...`);
 
         const folderPath = 'src/saved';
@@ -148,19 +155,18 @@ class BPMNEngineManager {
      * @param {string} options.flowName - The folder name where the XML and services files are located.
      * @param {Object} options.variables - The initial variables for the process.
      * @param {string} options.instanceId - Unique identifier for the process instance (e.g., orderId).
-     * @param {Object} [options.activityHandlers] - Optional activity handlers for specific tasks.
+     // * @param {Object} [options.activityHandlers] - Optional activity handlers for specific tasks.
      */
-    async startEngine({flowName, variables = {}, instanceId, activityHandlers = {}}) {
+    async startEngine({flowName, variables = {}, instanceId}) {
         const start = async () => {
+
+            this.errorThrown = false;
+
             if (!flowName) {
                 throw new Error('Flow name is required to start the engine.');
             }
 
             const {bpmnXml: source, services: loadedServices} = await this.#loadBpmnAndServices(flowName);
-
-            if (Object.keys(activityHandlers).length > 0) {
-                this.registerActivityHandlers(activityHandlers);
-            }
 
             if (!source) {
                 throw new Error('No BPMN XML file found in the directory.');
@@ -189,16 +195,46 @@ class BPMNEngineManager {
 
             return engine;
         }
-        return new Promise(async (resolve, reject) => {
-            ContextStore.run({flowName, variables, instanceId}, async () => {
+        return new Promise((resolve, reject) => {
+            ContextStore.run({flowName, variables, instanceId, resolve, reject}, async () => {
+                //ContextStore.set('promiseResolver', { resolve, reject });
+
                 try {
-                    resolve(await start());
+                    await start();
                 } catch (e) {
+                    printer.yellow("ERROR OCCURRED, REJECTING...")
                     reject(e);
                 }
             });
         });
     }
+
+    #completeEngine(instanceId, result) {
+        const resolve = ContextStore.getStore().resolve;
+
+        printer.green(`[${instanceId}] Engine promise about to be resolved with result: ${result}`)
+
+        if (resolve && !this.errorThrown) {
+            resolve(result);
+        } else {
+            console.error('No resolver found for instance:', instanceId);
+        }
+    }
+
+    #failEngine(instanceId, error) {
+        this.errorThrown = true;
+        const reject = ContextStore.getStore().reject;
+
+        if (reject) {
+            this.stopEngine(instanceId);
+            printer.red(`[${instanceId}] Engine promise about to be rejected due to error: ${error}`)
+            console.log("ERROR: ", error)
+            reject(error);
+        } else {
+            console.error('No reject function found for instance:', instanceId);
+        }
+    }
+
 
     /**
      * Wrap service tasks to inject executionContext and ensure callback is called.
@@ -209,7 +245,7 @@ class BPMNEngineManager {
         const wrappedServices = {};
 
         for (const [serviceName, serviceFn] of Object.entries(services)) {
-            wrappedServices[serviceName] = this.#wrapServiceFunction(serviceFn);
+            wrappedServices[serviceName] = this.#wrapServiceFunction(serviceFn, serviceName);
         }
 
         return wrappedServices;
@@ -255,10 +291,82 @@ class BPMNEngineManager {
         return null;
     }
 
-    #wrapServiceFunction(serviceFn) {
+    #wrapServiceFunction(serviceFn, serviceName) {
         let handle = function (executionContext, callback, args = []) {
-            if (typeof executionContext === "string")
-                return (context, cbk) => handle(context, cbk, ...[executionContext, callback]);
+            // console.log("EXECUTION CONTEXT: ", executionContext);
+            // console.log("CALLBACK: ", typeof callback);
+            // console.log("ARGS: ", arguments);
+            if (typeof callback !== "function" || !executionContext?.content?.executionId)
+                return (context, cbk) => handle(context, cbk, Object.values(arguments));
+
+
+            function getServiceName () {
+                return serviceName;
+            }
+
+            function returning (value) {
+                set(`return-${serviceName}`, value);
+            }
+
+            function getReturn (serviceName) {
+                return executionContext.environment.variables[`return-${serviceName}`];
+            }
+
+            function getReturns () {
+                return Object.entries(executionContext.environment.variables).filter(([key]) => key.startsWith('return-'));
+            }
+
+            if (executionContext?.environment?.variables && !executionContext?.environment?.variables?.conditionResolver) {
+                set("conditionResolver", (serviceName) => {
+                    if (!serviceName) {
+                        throw new Error("Service name is required for conditional logic.");
+                    }
+
+                    let condition;
+
+                    try {
+                        console.log("About to evaluate the service name or condition: ", serviceName);
+
+                        const isCondition = /[<>!=]=|===|!==/.test(serviceName);
+
+                        if (isCondition) {
+                            //condition = eval(serviceName);
+                            condition = Function("return " + serviceName)();
+                            if (condition === false){
+                                console.log("Condition is false, returning false.");
+                                return false;
+                            }
+                        } else {
+                            condition = undefined;
+                        }
+
+                    } catch (e) {
+                        console.error("Error during evaluation: ", e);
+                        condition = false;
+                    }
+
+                    if (condition === true) {
+                        printer.orange(`Condition ${serviceName} evaluated as true, no need to call a service. Returning true.`);
+                        return condition;
+                    }
+
+                    const accessor = serviceName?.replaceAll('.', '-');
+                    const func = executionContext.environment.services[accessor];
+
+                    if (!func) {
+                        throw new Error(`Service ${serviceName} not found for conditional logic.`);
+                    } else {
+                        func(executionContext, callback, args);
+                    }
+
+                    const result = params.getReturn(accessor);
+
+                    console.log("Result: ", typeof result);
+
+                    return result || false;
+                });
+            }
+
 
             function set(key, value) {
                 executionContext.environment.variables[key] = value;
@@ -274,13 +382,30 @@ class BPMNEngineManager {
                 return executionContext.environment.variables[key] || executionContext.environment.output[key] || null;
             }
 
+            function getMany(keys) {
+                if (!keys || keys.length === 0) {
+                    return {...executionContext.environment.variables, ...executionContext.environment.output};
+                }
+
+                return keys.reduce((acc, key) => {
+                    acc[key] = executionContext.environment?.variables[key] || executionContext.environment.output[key];
+                    return acc;
+                }, {});
+            }
+
             const params = {
                 context: executionContext,
                 args,
                 set,
                 get,
-                setMany
+                setMany,
+                getMany,
+                returning,
+                getReturn,
+                getReturns,
+                getServiceName
             };
+
             (async () => {
                 try {
                     await serviceFn(params);
@@ -305,15 +430,59 @@ class BPMNEngineManager {
         let taskInProgress = false;
 
         this.listener.on('activity.wait', async (api, engineApi) => {
-            if (api.content.isRecovered) {
+            if (api.type === 'bpmn:ErrorEventDefinition') {
+                this.errorHandlers.add(api.content.attachedTo);
+            } else if (api.content.isRecovered) {
+                if (this.signaledTasks.has(api.id)) {
+                    let handler = this.activityHandlers[api.id] || this.activityHandlers[api.name] || this.activityHandlers[api.type?.replace('bpmn:', '')];
+
+                    const activity = engineApi.getActivityById(api.id);
+
+                    const doAfter = activity?.behaviour?.extensionElements?.values?.find(value => !!value?.expression && value?.event === 'end');
+
+                    if (doAfter) {
+                        handler = this.activityHandlers[doAfter?.expression?.replace(".", "-")];
+                    }
+
+                    if (handler) {
+                        console.log("Calling the aftermath function for ", api.id)
+
+                        try {
+                            await handler(this.#wrapApi(api, engineApi));
+                        } catch (e) {
+                            this.errorThrown = true;
+                            printer.red(`[${instanceId}] Error in activity ${api.id}: ${e}`);
+                            this.#failEngine(instanceId, `[${instanceId}] Error in activity ${api.id}: ${e}`);
+                        }
+
+
+                        // handler(this.#wrapApi(api, engineApi)).then(() => {
+                        //
+                        // }).catch( (e) => {
+                        //     this.errorThrown = true;
+                        //     printer.red(`[${instanceId}] Error in activity ${api.id}: ${e}`);
+                        //     this.#failEngine(instanceId, `[${instanceId}] Error in activity ${api.id}: ${e}`);
+                        // });
+                    }
+                }
+
                 printer.orange("Skipping due to being recovered");
             } else {
                 console.log(`[${instanceId}] Activity ${api.id} (${api.type}) is waiting for input.`);
 
-                const handler = this.activityHandlers[api.id] || this.activityHandlers[api.name] || this.activityHandlers[api.type?.replace('bpmn:', '')];
+                let handler = this.activityHandlers[api.id] || this.activityHandlers[api.name] || this.activityHandlers[api.type?.replace('bpmn:', '')];
+
+                const activity = engineApi.getActivityById(api.id);
+
+                const doBefore = activity?.behaviour?.extensionElements?.values?.find(value => !!value?.expression && value?.event === 'start');
+
+                if (doBefore) {
+                    handler = this.activityHandlers[doBefore?.expression?.replace(".", "-")];
+                }
 
                 if (handler) {
-                    let result = await handler(this.#wrapApi(api, engineApi));
+                    console.log("Calling the function for ", api.id)
+                    await handler(this.#wrapApi(api, engineApi));
                     //BPMNEngineContext.setOutput(api.id, result);
                 } else {
                     console.log(`[${instanceId}] No handler registered for activity with ID: ${api.id} and name: ${api.name}`);
@@ -345,15 +514,16 @@ class BPMNEngineManager {
                 console.log("Saving on activity wait...");
                 await this.saveToDatabase(await this.saveEngineState(instanceId, api.id), instanceId);
             }
-
-            if (!this.signaledTasks.has(api.id)) {
-                // console.log("Saving...");
-                // await this.saveToDatabase(await this.saveEngineState(instanceId, api.id), instanceId);
-            }
         });
 
         this.listener.on('activity.error', (api, error) => {
-            console.error(`[${instanceId}] Error in activity ${api.id}:`, error);
+            if(this.errorHandlers.has(api.id)) {
+                this.errorHandlers.delete(api.id);
+                return;
+            }
+            this.errorThrown = true;
+            console.log("ERROR: ", api.content?.error)
+            this.#failEngine(instanceId, `[${instanceId}] Error in activity ${api.id}: ${api.content?.error}`)
         });
 
         this.listener.on('activity.signal', (api) => {
@@ -363,17 +533,34 @@ class BPMNEngineManager {
         });
 
         this.listener.on('activity.start', (api) => {
-            printer.green(`[${instanceId}] Activity ${api.id} started.`);
-
-            if (api.type === 'bpmn:ParallelGateway') {
-                //Need the id of the activities it's going to wait for
-                // console.log("GATEWAY");
-                // console.log(api);
+            if (this.errorThrown) {
+                console.error(`An error has occurred, will not be continuing with activity start ${api.id}.`);
+                return;
             }
+
+            printer.green(`[${instanceId}] Activity ${api.id} started. (Type: ${api.type})`);
         });
+
+        this.listener.on('activity.timer',  (api) => {
+            printer.green(`[${instanceId}] Activity ${api.id} has a timer event.`);
+
+            // this.saveEngineState(instanceId, "Timer started").then((state) => {TODO revisit this to have some sort of way to let timers be saved and restarted if needed. Asynchronous operations make this difficult because the timer is ignored.
+            //     this.saveToDatabase(state, instanceId, false, "src/on-timer/")
+            //     this.currentTimers.add(api.id);
+            //     console.log("Timer state saved...");
+            // }).catch((e) => {
+            //     console.error("Error saving timer state: ", e);
+            // });
+        });
+
+
 
         this.listener.on('activity.end', async (api, engine) => {
             printer.red(`[${instanceId}] Activity ${api.id} has ended.`);
+
+            if (api.type === 'bpmn:EndEvent'){
+                //TODO continue here, check if it's necessary to add a way to determine which end event is the 'correct' one, know if it should trigger the promise resolution, if it should delete all states, if it should save, if it should find a way to resume back to before the error (maybe this is on the modeler...). idk dude, think of something
+            }
 
             if (api.type === 'bpmn:EndEvent' && api.id === 'final') {
                 console.log(`[${instanceId}] Process for instance ${instanceId} has completed.`);
@@ -383,9 +570,23 @@ class BPMNEngineManager {
                 //this.#deleteSavedState(instanceId);
             }
 
+            if (this.errorHandlers.has(api.id)) {
+                this.errorHandlers.delete(api.id);
+            }
+
+            if (this.currentTimers.has(api.id)) {
+                // console.log("Timer has ended...")
+                // this.currentTimers.delete(api.id);
+                // this.#deleteSavedState(instanceId, "src/on-timer");
+            }
 
             if (this.signaledTasks.has(api.id)) {
                 this.signaledTasks.delete(api.id);
+                if (!this.errorThrown) {
+                    this.#completeEngine(instanceId, 'Promise being resolved, task signaled.');
+                } else {
+                    return;
+                }
                 if (this.pendingTasks.size > 0) {
                     console.log("Saving... Pending tasks: ", this.pendingTasks)
                     await this.saveToDatabase(await this.saveEngineState(instanceId, "Other pending tasks"), instanceId, true);
@@ -405,6 +606,7 @@ class BPMNEngineManager {
         });
 
         this.listener.on('flow.take', (flow) => {
+            console.log("FLOW: ", flow.owner.behaviour)
             console.log(`[${instanceId}] Flow taken from ${flow.content.sourceId} to ${flow.content.targetId}`);
         });
 
@@ -416,6 +618,9 @@ class BPMNEngineManager {
      * @param causedBy - The reason for saving the state.
      */
     async saveEngineState(instanceId, causedBy = "") {
+        if (this.errorThrown) {
+            return;
+        }
         const engine = this.engines.get(instanceId);
         if (!engine) {
             console.error(`No engine found for instance ${instanceId}`);
@@ -432,114 +637,117 @@ class BPMNEngineManager {
      * @param {Object} options - Options to resume the engine.
      * @param {string} options.instanceId - Unique identifier for the process instance.
      * @param {function} [options.callback] - Optional callback for custom handling of user tasks.
-     * @param {Object} [options.activityHandlers] - Optional activity handlers for specific tasks.
      * @param {string || null} [options.taskIdToSignal] - Optional task ID to signal after resuming the engine. TODO May need to make this mandatory.
      */
 
-    async resumeEngine({instanceId, flowName, callback = null, activityHandlers = {}, taskIdToSignal = null}) {
+    async resumeEngine({instanceId, flowName, callback = null, taskIdToSignal = null}) {
 
-        if (!flowName) {
-            throw new Error('Flow name is required to start the engine.');
-        }
+        const resume = async () => {
 
-        if (Object.keys(activityHandlers).length > 0) {
-            this.registerActivityHandlers(activityHandlers);
-        }
+            this.errorThrown = false;
 
-        console.log(`[${instanceId}] Resuming the engine...`);
-
-        console.log("About to restart engine...");
-
-        const {bpmnXml: source, services: loadedServices} = await this.#loadBpmnAndServices(flowName);
-
-        const loadedState = this.loadEngineState(instanceId);
-
-        const engine = Engine().recover(loadedState, {
-            moddleOptions: {
-                camunda,
-            },
-            extensions,
-            services: this.#wrapServices(loadedServices),
-        });
-
-        const listener = this.listener || new EventEmitter();
-
-        this.attachListeners(engine, instanceId);
-
-        listener.once('wait', async (api, engine) => {
-            console.log(`[${instanceId}] Engine is waiting on a task...`);
-
-            // for (const [key, value] of Object.entries(variablesToInsert?.before || {})) {
-            //     console.log("Inserting: ", key, value)
-            //     api.environment.output[key] = value;
-            // }
-
-            if (callback) {
-                callback(this.#wrapApi(api, engine), engine);
+            if (!flowName) {
+                throw new Error('Flow name is required to start the engine.');
             }
 
-            // for (const [key, value] of Object.entries(variablesToInsert?.after || {})) {
-            //     api.environment.variables[key] = value;
-            // }
-        });
+            console.log(`[${instanceId}] Resuming the engine...`);
 
-        console.log("Reaching critical point...");
+            console.log("About to restart engine...");
 
-        this.engines.set(instanceId, engine);
+            const {bpmnXml: source, services: loadedServices} = await this.#loadBpmnAndServices(flowName);
 
-        if (taskIdToSignal) {
-            this.signaledTasks.add(taskIdToSignal);
-        }
+            const loadedState = this.loadEngineState(instanceId);
 
-        const execution = await engine.resume({listener}, (err) => {
-            if (err) {
-                console.error(`[${instanceId}] Error resuming the process:`, err);
-                if (this.engines.has(instanceId)) {
-                    this.engines.delete(instanceId);
-                }
-            } else {
-                console.log(`[${instanceId}] 1. Process resumed for instance ${instanceId}.`);
-                //this.engines.set(instanceId, engine);
-            }
-        });
+            const engine = Engine().recover(loadedState, {
+                moddleOptions: {
+                    camunda,
+                },
+                extensions,
+                services: this.#wrapServices(loadedServices),
+            });
 
-        if (taskIdToSignal) {
-            let matchedTask = null;
+            const listener = this.listener || new EventEmitter();
 
-            execution.getPostponed().forEach(task => {
-                if (task.type.includes("SubProcess")) {
-                    const subTask = task.getPostponed().find(subTask => subTask.id === taskIdToSignal);
+            this.attachListeners(engine, instanceId);
 
-                    task.getPostponed().forEach(subTask => {
-                        if (subTask.id !== taskIdToSignal && !subTask.type.includes("SubProcess")) {
-                            this.pendingTasks.add(subTask.id);
-                        }
-                    });
+            listener.once('wait', async (api, engine) => {
+                console.log(`[${instanceId}] Engine is waiting on a task...`);
 
-                    if (subTask) {
-                        matchedTask = subTask;
-                    }
-                } else {
-                    if (task.id !== taskIdToSignal && !task.type.includes("SubProcess") && this.#getActivityType(task) === 'task') {
-                        this.pendingTasks.add(task.id);
-                    }
-
-                    if (task.id === taskIdToSignal) {
-                        matchedTask = task;
-                    }
+                if (callback) {
+                    callback(this.#wrapApi(api, engine), engine);
                 }
             });
 
-            if (matchedTask) {
-                printer.orange(`[${instanceId}] Signaling task with id ${taskIdToSignal}`);
+            console.log("Reaching critical point...");
 
-                matchedTask.signal(Object.keys(execution.environment.output)?.length > 0 ? execution.environment?.output : null, {id: taskIdToSignal});
+            this.engines.set(instanceId, engine);
 
-                this.pendingTasks.delete(taskIdToSignal);
-            } else {
-                this.signaledTasks.delete(taskIdToSignal);
+            if (taskIdToSignal) {
+                this.signaledTasks.add(taskIdToSignal);
+            }
+
+            const execution = await engine.resume({listener}, (err) => {
+                if (err) {
+                    console.error(`[${instanceId}] Error resuming the process:`, err);
+                    if (this.engines.has(instanceId)) {
+                        this.engines.delete(instanceId);
+                    }
+                } else {
+                    console.log(`[${instanceId}] 1. Process resumed for instance ${instanceId}.`);
+                    //this.engines.set(instanceId, engine);
+                }
+            });
+
+            if (taskIdToSignal) {
+                let matchedTask = null;
+
+                execution.getPostponed().forEach(task => {
+                    if (task.type.includes("SubProcess")) {
+                        const subTask = task.getPostponed().find(subTask => subTask.id === taskIdToSignal);
+
+                        task.getPostponed().forEach(subTask => {
+                            if (subTask.id !== taskIdToSignal && !subTask.type.includes("SubProcess")) {
+                                this.pendingTasks.add(subTask.id);
+                            }
+                        });
+
+                        if (subTask) {
+                            matchedTask = subTask;
+                        }
+                    } else {
+                        if (task.id !== taskIdToSignal && !task.type.includes("SubProcess") && this.#getActivityType(task) === 'task') {
+                            this.pendingTasks.add(task.id);
+                        }
+
+                        if (task.id === taskIdToSignal) {
+                            matchedTask = task;
+                        }
+                    }
+                });
+
+                if (matchedTask) {
+                    printer.orange(`[${instanceId}] Signaling task with id ${taskIdToSignal}`);
+
+                    matchedTask.signal(Object.keys(execution.environment.output)?.length > 0 ? execution.environment?.output : null, {id: taskIdToSignal});
+
+                    this.pendingTasks.delete(taskIdToSignal);
+                } else {
+                    this.signaledTasks.delete(taskIdToSignal);
+                }
             }
         }
+
+        return new Promise((resolve, reject) => {
+            ContextStore.run({flowName, instanceId, resolve, reject}, async () => {
+
+                try {
+                    await resume();
+                } catch (e) {
+                    printer.yellow("ERROR OCCURRED, REJECTING...")
+                    reject(e);
+                }
+            });
+        });
     }
 
     #wrapApi = (api, engine) => {
@@ -669,6 +877,9 @@ class BPMNEngineManager {
             engine.stop();
             console.log(`Engine stopped for instance ${instanceId}`);
             this.engines.delete(instanceId);
+            if (!this.errorThrown) {
+                this.#completeEngine(instanceId, 'Promise being resolved, engine stopped.');
+            }
         } else {
             console.log(`No engine found for instance ${instanceId}`);
         }
@@ -682,17 +893,41 @@ class BPMNEngineManager {
      * */
 
     #adjustSource = (source) => {
-        const regex = /<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">(.*?)<\/bpmn:conditionExpression>/g;
+        const conditionRegex = /<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">(.*?)<\/bpmn:conditionExpression>/g;
 
-        return source?.replaceAll('camunda:expression', 'implementation')
-        //     ?.replaceAll(regex, (match, condition) => {
-        //     const transformedCondition = `next(null, ${condition.trim().replace(/==/g, '===')});`;
-        //
-        //     printer.yellow(`Transformed condition: ${transformedCondition}`)
-        //
-        //     return `<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="javascript">${transformedCondition}</bpmn:conditionExpression>`;
-        // });
-    }
+        const expressions = this.#findCamundaExpressions(source);
+        source = expressions.reduce((updatedSource, expression) => {
+            const regex = new RegExp(`camunda:expression="${expression}"`, 'g');
+            return updatedSource.replace(regex, `camunda:expression="\${environment.services.${expression.replaceAll('.', '-')}}"`);
+        }, source);
+
+        return source
+            ?.replaceAll('camunda:expression', 'implementation')
+            ?.replaceAll(conditionRegex, (match, condition) => {
+                if (!condition) {
+                    return match;
+                }
+
+                const transformedCondition = `\${environment.variables.conditionResolver('${condition}')}`;
+                printer.yellow(`Transformed condition: ${transformedCondition}`);
+
+                return `<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression"
+                                             >${transformedCondition}</bpmn:conditionExpression>`;
+            });
+    };
+
+
+    #findCamundaExpressions = (source) => {
+        const regex = /<[^>]*camunda:expression="([^"]*)"[^>]*>/g;
+        const matches = [];
+        let match;
+
+        while ((match = regex.exec(source)) !== null) {
+            matches.push(match[1]);
+        }
+
+        return matches;
+    };
 
     /**
      * Load the BPMN XML and services file for a specific flow.
@@ -702,9 +937,9 @@ class BPMNEngineManager {
 
     async #loadBpmnAndServices(flowName) {
         try {
-            const baseDirectory = path.join(__dirname, 'bpmn-flows');
+            //const baseDirectory = path.join(__dirname, 'bpmn-flows');
 
-            const directoryPath = path.join(baseDirectory, flowName);
+            const directoryPath = path.join(this.config_path, flowName);
 
             if (!fs.existsSync(directoryPath)) {
                 throw new Error(`Directory not found: ${directoryPath}`);
@@ -712,7 +947,14 @@ class BPMNEngineManager {
 
             const files = await fs.promises.readdir(directoryPath);
 
-            const bpmnFile = files.find(file => path.extname(file) === '.bpmn');
+            const bpmnFiles = files.filter(file => path.extname(file) === '.bpmn');
+
+            if (bpmnFiles.length > 1) {
+                throw new Error(`Multiple BPMN files found in directory, only one source (.bpmn file) per flow: ${directoryPath}`);
+            }
+
+            const bpmnFile = bpmnFiles[0];
+
             let bpmnXml = null;
 
             if (bpmnFile) {
@@ -720,22 +962,37 @@ class BPMNEngineManager {
                 bpmnXml = await fs.promises.readFile(bpmnFilePath, 'utf-8');
             }
 
-            const jsFile = files.find(file => path.extname(file) === '.js');
+            const sharedServices = await this.loadHandlers();
 
-            if (!jsFile) {
-                throw new Error('No services (.js) file found in the directory.');
+            const serviceTree = await this.loadHandlers(path.join(this.config_path, flowName, 'handlers'));
+
+            const activityHandlers = await this.loadHandlers(path.join(this.config_path, flowName, 'activity-helpers'));
+
+            const flattenedActivityHandlers = {};
+
+            let flattenedServices = {};
+
+            function flatten(obj, aggregator, path = '') {
+                for (const key in obj) {
+                    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                        if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+                            flatten(obj[key], aggregator, path ? `${path}-${key}` : key);
+                        } else {
+                            aggregator[path ? `${path}-${key}` : key] = obj[key];
+                        }
+                    }
+                }
             }
 
-            const servicesFilePath = path.join(directoryPath, jsFile);
-            const servicesFileUrl = pathToFileURL(servicesFilePath).href;
+            flatten(activityHandlers, flattenedActivityHandlers);
 
-            const servicesModule = await import(servicesFileUrl);
+            this.registerActivityHandlers(flattenedActivityHandlers);
 
-            const services = servicesModule.default || servicesModule;
+            flatten({...sharedServices, ...serviceTree}, flattenedServices);
 
             return {
                 bpmnXml,
-                services
+                services: {...flattenedServices}
             };
         } catch (error) {
             console.error('Error loading BPMN or services file:', error);
@@ -743,11 +1000,40 @@ class BPMNEngineManager {
         }
     }
 
+    async loadHandlers(directPath = null) {
+        const dirPath = directPath || path.join(this.config_path, 'shared-functions');
+        const services = {};
+
+        async function traverseDirectory(currentPath, obj, parentKey = '') {
+            const files = fs.readdirSync(currentPath);
+
+            for (const file of files) {
+                const fullPath = path.join(currentPath, file);
+                const stat = fs.statSync(fullPath);
+
+                if (stat.isDirectory()) {
+                    await traverseDirectory(fullPath, obj, parentKey + file + '-');
+                } else if (file.endsWith('.js')) {
+                    const module = await import(pathToFileURL(fullPath).href);
+                    const fileNameWithoutExt = path.basename(file, '.js');
+
+                    obj[parentKey + fileNameWithoutExt] = module.default || module;
+                }
+            }
+        }
+
+        await traverseDirectory(dirPath, services);
+
+        return services;
+    }
+
 
 }
 
-const bpmnEngineManager = new BPMNEngineManager();
-export default bpmnEngineManager;
+// const bpmnEngineManager = new BPMNEngineManager();
+// export default bpmnEngineManager;
+
+export {BPMNEngineManager};
 
 const BPMNEngineContext = {
     get variables() {
