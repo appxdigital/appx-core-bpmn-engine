@@ -1,8 +1,8 @@
 {
-  "name": "bpmn-project",
-  "version": "1.0.0",
+  "name": "appx-core-bpmn-engine",
+  "version": "0.1.5",
   "description": "",
-  "main": "src/engine.js",
+  "main": "src/bpmn-engine.js",
   "type": "module",
   "scripts": {
     "test": "mocha"
@@ -11,9 +11,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^5.20.0",
+    "@quixo3/prisma-session-store": "^3.1.13",
     "bpmn-engine": "^22.0.3",
     "bpmn-moddle": "^9.0.1",
-    "camunda-bpmn-moddle": "^7.0.1"
+    "camunda-bpmn-moddle": "^7.0.1",
+    "express": "^4.21.0",
+    "express-session": "^1.18.0",
+    "prisma": "^5.20.0",
+    "session-file-store": "^1.5.0",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "chai": "^5.1.1",

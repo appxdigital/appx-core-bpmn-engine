@@ -1,22 +1,27 @@
 import * as path from "path";
 import * as fs from "fs";
-import {BPMNEngineManager} from "./bpmn-engine.js";
+import { BPMNEngineManager } from "./src/bpmn-engine.js";
 import { fileURLToPath } from 'url';
+import session from 'express-session';
+import FileStore from 'session-file-store';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const SessionFileStore = FileStore(session);
+const sessionsDir = path.join(__dirname, 'sessions');
+const storage = new SessionFileStore({ path: sessionsDir, logFn: function() {} });
 
 const bpmnEngineManager = new BPMNEngineManager({
     config_path: path.join(__dirname, 'bpmn-flows'),
+    storage: storage,
 });
 
 console.log("Recovering the engine...");
 
-//read from src/saved/state.json
-
-bpmnEngineManager.resumeEngine({
+bpmnEngineManager.resumeFlow({
     instanceId: "process-123",
     flowName: "test-flow",
-    taskIdToSignal: "userTaskId",
+    taskIdToSignal: "userTask",
 
     callback: (api) => {
 

@@ -27,21 +27,20 @@ const services = {
         // params.executionContext.environment.variables.userName = reply;
 
         console.log("The first function set 'test' as : " + test)
-        throw new Error('Error thrown from the promptUser function!');
+        //throw new Error('Error thrown from the promptUser function!'); TODO uncomment to test error throwing
         //rl.close();
     },
 
     get: async (params) => {
         console.log('Logging function is being called, it will now await for async function to complete in 5 seconds...');
-        //I want it now to await here and only then proceed with the following console.log
 
-        const test = await new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve('Success');
-            }, 5000);
-        });
-
-        console.log("The function has been called and the result is: " + test);
+        // const test = await new Promise((resolve, reject) => {
+        //     setTimeout(() => {
+        //         resolve('Success');
+        //     }, 5000);
+        // });
+        //
+        // console.log("The function has been called and the result is: " + test);
 
         // console.log("Variables", BPMNEngineContext.variables);
         console.log("Arguments", params.args);

@@ -1,9 +1,11 @@
 import readline from "readline";
-import {BPMNEngineContext} from "../../bpmn-engine.js";
+import {BPMNEngineContext} from "../../src/bpmn-engine.js";
 
 const services = {
     sharedLog() {
         printer.cyan("Shared log function called!");
+
+        return "three";
     },
 
     sharedTest(params) {

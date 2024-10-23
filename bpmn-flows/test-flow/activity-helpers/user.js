@@ -9,6 +9,12 @@ const activityHandlers = {
     userTaskId: async (task) => {
         console.log(`Task was selected through ID: ${task.id}...`);
         //await new Promise(r => setTimeout(() => r("Resultado " + task.id), 10000));
+        const test = task.getSerialized();
+        console.log("SERIALIZED :", test);
+        const unbase64 = Buffer.from(test, 'base64').toString('utf-8');
+        console.log("UNBASE64 :", unbase64);
+        const parsed = JSON.parse(unbase64);
+        console.log("PARSED :", parsed);
         printer.cyan("SUCCEEEEEEEEESSSSSSSSSSSSS")
     },
     userTaskIdPost: async (task) => {
