@@ -28,7 +28,7 @@ To implement the Appx Core BPMN Engine:
 Design your BPMN flow using the free tool Camunda Modeler 7 and export it as a .bpmn file.
 
 Organize the folder structure:
-- bpmn-flows folder at root level
+- bpmn-flows (example) folder at root level
   - Each flow has a folder with:
     - handlers folder: Contains the logic for the BPMN flow (JavaScript files or subfolders).
     - activity-helpers folder: Contains functions to be run before or after user tasks.
@@ -53,7 +53,7 @@ Gateways control the divergence and convergence of sequence flows. They determin
 
 A Service Task represents a task in the process performed by a service. This can include actions like sending emails, making API calls, or updating a database.
 
-In AAppx Core BPMN Engine, you can define the behaviour of the service using expressions, for example:
+In Appx Core BPMN Engine, you can define the behaviour of the service using expressions, for example:
 
 *users.register.sendEmail* - The corresponding logic resides in the users/register.js file with a service named sendEmail.
 
@@ -121,11 +121,26 @@ You can also use returning() in services to store values without specifying a ke
 
 To get started with the Appx Core BPMN Engine, follow these steps:
 
-Clone the repository.
+Install the package by running: npm install appx-core-bpmn-engine --registry=http://npm.appx.pt/
 
-Install the required dependencies.
+Import the engine, you can do so by placing the following on the top of your file: 
 
-Design your BPMN flow using Camunda Modeler 7 and set up the folder structure as explained above.
+> import { BPMNEngineManager } from "appx-core-bpmn-engine";
+
+As previously mentioned, you'll then need a storage configuration for FileStore or PrismaStore, it will look something like this:
+
+> const sessionsDir = path.join(__dirname, 'bpmn-saves');
+> 
+> const storage = new FileStoreSession({ path: path.join(__dirname, 'bpmn-saves'), logFn: function() {} });
+
+Next, it's time to add the config_path, the path to the folder where you'll include all your flows and shared functions, here's an example for the engine manager initialization:
+
+> const bpmnEngineManager = new BPMNEngineManager({
+    config_path: path.join(__dirname, 'bpmn-flows'),
+    storage: storage,
+});
+
+Design your BPMN flow using Camunda Modeler 7, copy the resulting XML and set up the folder structure as explained above.
 
 Prepare a storage mechanism like FileStore or PrismaStore and pass the storage. In theory, the interface implemented to interact with storages allows all that share the same API as the previously mentioned (.get, .set, .list/.ids, .destroy), but only those two have been tested.
 
