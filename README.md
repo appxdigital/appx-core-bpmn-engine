@@ -23,7 +23,6 @@ Appx Core BPMN Engine provides a powerful workflow engine that allows developers
 - [Subprocess](#subprocess)
 - [Sequence Flow](#sequence-flow)
 - [Variables](#variables)
-- [Contributing](#contributing)
 - [License](#license)
   
 ## What is BPMN?
@@ -157,11 +156,10 @@ Prepare a storage mechanism like FileStore or PrismaStore and pass the storage. 
 
 Start the engine with your BPMN file and use startFlow to kick off your process.
 
-## Contributing
-
-Contributions are welcome!  
-Feel free to open issues or submit pull requests with improvements, bug fixes, or new examples.
-
 ## License
 
-This project is licensed under the [MIT License](./LICENSE).
+This project is licensed under the terms of the
+[GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html).
+
+You are free to use, modify, and distribute this software, provided that
+any derivative works are also licensed under the same GPL terms.
