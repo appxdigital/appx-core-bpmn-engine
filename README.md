@@ -1,5 +1,14 @@
 # Appx Core BPMN Engine
 
+A lightweight Node.js BPMN 2.0 workflow engine compatible with Camunda Modeler 7.
+
+**Key features**
+- ✅ Compatible with Camunda Modeler 7 BPMN XML
+- ✅ FileStore & PrismaStore support (pluggable storage)
+- ✅ Service tasks, user tasks, timers, gateways, subprocesses
+- ✅ Pause/resume flows with `instanceId` and serialized state
+- ✅ Designed for dynamic, long-running workflows
+
 Appx Core BPMN Engine provides a powerful workflow engine that allows developers to visualize and automate their business processes using the BPMN (Business Process Model and Notation) standard. It supports Camunda Modeler 7 XML files, allowing users to design their processes, link them to custom handlers, and integrate timers, user tasks, service tasks, and gateways to streamline complex workflows. This engine is designed for ease of integration, flexibility, and dynamic process management.
 
 ## Table of Contents
@@ -14,6 +23,8 @@ Appx Core BPMN Engine provides a powerful workflow engine that allows developers
 - [Subprocess](#subprocess)
 - [Sequence Flow](#sequence-flow)
 - [Variables](#variables)
+- [Contributing](#contributing)
+- [License](#license)
   
 ## What is BPMN?
 
@@ -145,3 +156,12 @@ Design your BPMN flow using Camunda Modeler 7, copy the resulting XML and set up
 Prepare a storage mechanism like FileStore or PrismaStore and pass the storage. In theory, the interface implemented to interact with storages allows all that share the same API as the previously mentioned (.get, .set, .list/.ids, .destroy), but only those two have been tested.
 
 Start the engine with your BPMN file and use startFlow to kick off your process.
+
+## Contributing
+
+Contributions are welcome!  
+Feel free to open issues or submit pull requests with improvements, bug fixes, or new examples.
+
+## License
+
+This project is licensed under the [MIT License](./LICENSE).
